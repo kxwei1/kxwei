@@ -2,22 +2,19 @@
   <div>
     <el-breadcrumb separator=">">
       <el-breadcrumb-item :to="{path:'/home'}">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>管理员管理</el-breadcrumb-item>
     </el-breadcrumb>
     <el-button @click="$router.push('/user/add')" type="primary">添加</el-button>
     <el-table
-      :data="menus"
+      :data="users"
       style="width:100%"
       border
       stripe
       row-key="id"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      >
-      <el-table-column prop="id" label="菜单编号" width="80px"></el-table-column>
-      <el-table-column prop="title" label="菜单名称"></el-table-column>
-      <el-table-column prop="icon" label="菜单图标"></el-table-column>
-      <el-table-column prop="url" label="菜单地址"></el-table-column>
+      <el-table-column prop="username" label="用户名"></el-table-column>
+      <el-table-column prop="rolename" label="所选角色"></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="item">
           <el-tag v-if="item.row.status==1">启用</el-tag>
@@ -26,11 +23,18 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="item">
-          <el-button type="primary" @click="edit(item.row.id)">编辑</el-button>
+          <el-button type="primary" @click="edit(item.row.uid)">编辑</el-button>
           <el-button type="danger" @click="del(item.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      :page-size="pagesize"
+      layout="prev, pager, next"
+      :total="total"
+      @current-change="(n)=>pageChange(n)"
+    ></el-pagination>
   </div>
 </template>
 <script>
@@ -42,21 +46,41 @@ export default {
         children: "children",
         label: "title"
       },
-      menus: []
+      users: [],
+      menus: [],
+      total: 0,
+      pagesize: 2,
+      nowpage: 1
     };
   },
   mounted() {
-    this.$axios({
-      url: "/api/menulist",
-      params: { istree: 1 }
-    }).then(res => {
-      
-      this.menus = res.data.list;
-    });
+    this.getCount();
+    this.getPage();
   },
   methods: {
-    edit(mid) {
-      this.$router.push("/menu/" + mid);
+    getCount() {
+      this.$axios({ url: "/api/usercount" }).then(res => {
+
+        this.total = res.data.list[0].total;
+      });
+    },
+    getPage() {
+      this.$axios({
+        url: "/api/userlist",
+        
+        params: { size: this.pagesize, page: this.nowpage }
+      }).then(res => {
+        this.users = res.data.list;
+      });
+    },
+    pageChange(n) {
+      this.nowpage = n;
+      this.getPage();
+    },
+    edit(uid) {
+      console.log();
+      
+      this.$router.push("/user/" + uid);
     },
     del(id) {
       this.$confirm("此操作将永久删除该菜单, 是否继续?", "提示", {
@@ -65,14 +89,12 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios({
-          url: "/api/menudelete",
+          url: "/api/userdelete",
           method: "post",
           data: { id }
         }).then(res => {
-          this.$axios.get("/api/menulist").then(res => {
-            console.log(res.data.list);
-            this.menus = res.data.list;
-          });
+          this.getPage();
+          this.getCount();
           if (res.data.code === 200) {
             this.$message({
               type: "success",

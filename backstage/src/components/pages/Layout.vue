@@ -1,10 +1,16 @@
 <template>
   <el-container>
-    <el-header>header</el-header>
+    <el-header>
+      <el-tag>
+        <i class="el-icon-user-solid"></i>
+        {{username}}
+      </el-tag>
+      <el-button type="warning" @click="esc()">退出</el-button>
+    </el-header>
     <el-container>
       <v-nav></v-nav>
       <el-main>
-          <router-view></router-view>
+        <router-view></router-view>
       </el-main>
     </el-container>
     <el-footer>footer</el-footer>
@@ -12,11 +18,35 @@
 </template>
 
 <script>
-import vNav from '../views/Nav'
+import vNav from "../views/Nav";
 export default {
-    components:{
-        vNav
+  data() {
+    return {
+        username: ""
+    };
+  },
+  mounted(){
+    this.username=JSON.parse(localStorage.getItem("htuser")).username
+    // console.log(JSON.parse(localStorage.getItem("htuser")).username);
+    
+  },
+  methods:{
+    esc(){
+      window.localStorage.clear()
+      this.$router.push('/login')
     }
+  },
+  components: {
+    vNav
+  },
+  beforeRouteEnter(to, from, next) {
+    let userinfo = localStorage.getItem("htuser") || "";
+    if (userinfo) {
+      next();
+    } else {
+      next("/login");
+    }
+  }
 };
 </script>
 
@@ -26,6 +56,7 @@ export default {
   height: 100%;
 }
 .el-header {
+  text-align: right;
   background-color: skyblue;
 }
 .el-footer {

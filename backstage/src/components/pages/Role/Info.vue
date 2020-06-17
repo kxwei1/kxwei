@@ -3,28 +3,25 @@
     <el-breadcrumb separator=">">
       <el-breadcrumb-item :to="{path:'/home'}">首页</el-breadcrumb-item>
       <el-breadcrumb-item>
-        <a href="#/menu">管理员列表</a>
+        <a href="#/role">角色管理</a>
       </el-breadcrumb-item>
-      <el-breadcrumb-item>管理员{{tip}}</el-breadcrumb-item>
+      <el-breadcrumb-item>角色{{tip}}</el-breadcrumb-item>
     </el-breadcrumb>
     <el-form label-width="80px" style="width:600px;" :rules="rules" :model="info" ref="menuForm">
-      <el-form-item label="角色" prop="pid">
-        <el-select v-model="info.pid" placeholder="请选择">
-          <el-option value>请选择</el-option>
-          <el-option :value="0" label="顶级菜单">顶级菜单</el-option>
-          <el-option
-            v-for="menuitem of menus"
-            :key="menuitem.id"
-            :value="menuitem.id"
-            :label="menuitem.title"
-          >{{menuitem.title}}</el-option>
-        </el-select>
+      <el-form-item label="角色名称" prop="rolename">
+        <el-input v-model="info.rolename"></el-input>
       </el-form-item>
-      <el-form-item label="用户名" prop="title">
-        <el-input v-model="info.title"></el-input>
-      </el-form-item>
-      <el-form-item label="密码" prop='pwd'>
-        <el-input v-model="info.icon"></el-input>
+
+      <el-form-item label="角色权限">
+        <el-tree
+          :data="menus"
+          :props="defaultProps"
+          ref="tree"
+          default-expand-all
+          node-key="id"
+          :default-checked-keys="info.menus"
+          show-checkbox
+        ></el-tree>
       </el-form-item>
       <el-form-item label="状态">
         <el-switch v-model="info.status"></el-switch>
@@ -43,43 +40,42 @@ export default {
       tip: "添加",
       menus: [],
       info: {
-        title: "",
-        pid: "",
-        icon: "",
-        url: "",
-        status: true,
-        type: "1",
-        pwd:''
+        rolename: "",
+        menus: [],
+        status: true
+      },
+      defaultProps: {
+        children: "children",
+        label: "title"
       },
       rules: {
-        title: [
-          { required: true, message: "用户名不能为空", trigger: "blur" },
+        rolename: [
+          { required: true, message: "角色名称不能为空", trigger: "blur" },
           { min: 1, max: 20, message: "菜单名称长度不符合要求" }
         ],
-        pid: [{ required: true, message: "请选择角色" }],
-        pwd:[{ required: true, message: "密码不能为空", trigger: "blur" }]
+        rid: [{ required: true, message: "请选择角色权限" }]
       }
     };
   },
   mounted() {
-    if (this.$route.params.menuid) {
+    console.log(this.$route.params.roleid);
+    
+    if (this.$route.params.roleid) {
       this.tip = "修改";
       this.$axios({
-        url: "/api/menuinfo",
-        params: { id: this.$route.params.menuid }
+        url: "/api/roleinfo",
+        params: { id: this.$route.params.roleid }
       }).then(res => {
-        console.log(res);
-
         this.info = res.data.list;
         this.info.status = this.info.status == 1 ? true : false;
-        this.info.type = this.info.type.toString();
+        this.info.menus = this.info.menus ? this.info.menus.split(",") : "";
       });
     }
     this.$axios({
-      url: "/api/menulist"
+      url: "/api/menulist",
+      params: { istree: 1 }
     }).then(res => {
       this.menus = res.data.list;
-      console.log(this.menus);
     });
   },
   methods: {
@@ -88,16 +84,20 @@ export default {
         if (valid) {
           let data = JSON.parse(JSON.stringify(this.info));
           data.status = data.status ? 1 : 2;
-          let url = "/api/menuadd";
-          if (this.$route.params.menuid) {
-            (url = "/api/menuedit"), (data.id = this.$route.params.menuid);
+          let url = "/api/roleadd";
+          if (this.$route.params.roleid) {
+            (url = "/api/roleedit"), (data.id = this.$route.params.roleid);
           }
+          data.menus = this.$refs.tree.getCheckedKeys()
+            ? this.$refs.tree.getCheckedKeys().join(",")
+            : "";
+
           axios.post(url, data).then(res => {
             console.log(data);
             if (res.data.code == 200) {
-              this.$router.push("/menu");
+              this.$router.push("/role");
             } else {
-              alert(1);
+              alert(res.data.msg);
             }
           });
         }
