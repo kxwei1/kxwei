@@ -1,12 +1,13 @@
 <template>
   <div>
+    
     <el-breadcrumb separator=">">
       <el-breadcrumb-item :to="{path:'/home'}">首页</el-breadcrumb-item>
       <el-breadcrumb-item>菜单管理</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-button @click="$router.push('/menu/add')" type="primary">添加</el-button>
+    <el-button @click="$router.push('/category/add')" type="primary">添加</el-button>
     <el-table
-      :data="menus"
+      :data="cates"
       style="width:100%"
       border
       stripe
@@ -14,9 +15,14 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       >
-      <el-table-column prop="title" label="菜单名称"></el-table-column>
-      <el-table-column prop="icon" label="菜单图标"></el-table-column>
-      <el-table-column prop="url" label="菜单地址"></el-table-column>
+      <el-table-column prop="id" label="分类编号"></el-table-column>
+      <el-table-column prop="catename" label="分类名称"></el-table-column>
+      <el-table-column prop="img" label="商品图片">
+        <template slot-scope="item">
+          <img class="img" :src="item.row.img" alt="">
+        </template>
+
+      </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="item">
           <el-tag v-if="item.row.status==1">启用</el-tag>
@@ -41,18 +47,19 @@ export default {
         children: "children",
         label: "title"
       },
-      menus: []
+      cates: []
     };
   },
   mounted() {
-    this.$http.get("/api/menulist", { istree: 1 }
-    ).then(res => {
-      this.menus = res.list;
-    });
+    let userinfo=JSON.parse(localStorage.getItem('htuser'))
+    this.$http.get('/api/catelist',{istree:1}).then(res=>{
+      this.cates=res.list
+    })
+
   },
   methods: {
     edit(mid) {
-      this.$router.push("/menu/" + mid);
+      this.$router.push("/cate/" + mid);
     },
     del(id) {
       this.$confirm("此操作将永久删除该菜单, 是否继续?", "提示", {
@@ -60,12 +67,11 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$http.post( "/api/menudelete",{ id }).then(res => {
-          this.$axios.get("/api/menulist").then(res => {
-            console.log(res.data.list);
-            this.menus = res.data.list;
+        this.$http.post("/api/catedelete",{ id }).then(res => {
+          this.$axios.get("/api/catelist").then(res => {
+            this.menus = res.list;
           });
-          if (res.data.code === 200) {
+          if (res.code === 200) {
             this.$message({
               type: "success",
               message: "删除成功!"
@@ -80,4 +86,8 @@ export default {
 };
 </script>
 <style>
+.img{
+  width: 100px;
+  height: 100px;
+}
 </style>

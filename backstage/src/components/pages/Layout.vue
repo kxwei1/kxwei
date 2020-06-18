@@ -22,31 +22,23 @@ import vNav from "../views/Nav";
 export default {
   data() {
     return {
-        username: ""
+      username: ""
     };
   },
-  mounted(){
-    this.username=JSON.parse(localStorage.getItem("htuser")).username
+  mounted() {
+    this.username = JSON.parse(localStorage.getItem("htuser")).username;
     // console.log(JSON.parse(localStorage.getItem("htuser")).username);
-    
   },
-  methods:{
-    esc(){
-      window.localStorage.clear()
-      this.$router.push('/login')
+  methods: {
+    esc() {
+      window.localStorage.clear();
+      this.$router.push("/login");
     }
   },
   components: {
     vNav
   },
-  beforeRouteEnter(to, from, next) {
-    let userinfo = localStorage.getItem("htuser") || "";
-    if (userinfo) {
-      next();
-    } else {
-      next("/login");
-    }
-  }
+  
 };
 </script>
 

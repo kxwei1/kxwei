@@ -21,6 +21,7 @@
           node-key="id"
           :default-checked-keys="info.menus"
           show-checkbox
+          check-strictly
         ></el-tree>
       </el-form-item>
       <el-form-item label="状态">
@@ -62,20 +63,16 @@ export default {
     
     if (this.$route.params.roleid) {
       this.tip = "修改";
-      this.$axios({
-        url: "/api/roleinfo",
-        params: { id: this.$route.params.roleid }
-      }).then(res => {
-        this.info = res.data.list;
+      this.$http.get("/api/roleinfo",{ id: this.$route.params.roleid }
+      ).then(res => {
+        this.info = res.list;
         this.info.status = this.info.status == 1 ? true : false;
         this.info.menus = this.info.menus ? this.info.menus.split(",") : "";
       });
     }
-    this.$axios({
-      url: "/api/menulist",
-      params: { istree: 1 }
-    }).then(res => {
-      this.menus = res.data.list;
+    this.$http.get("/api/menulist",{ istree: 1 }
+    ).then(res => {
+      this.menus = res.list;
     });
   },
   methods: {
@@ -92,12 +89,11 @@ export default {
             ? this.$refs.tree.getCheckedKeys().join(",")
             : "";
 
-          axios.post(url, data).then(res => {
-            console.log(data);
-            if (res.data.code == 200) {
+          this.$http.post(url, data).then(res => {
+            if (res.code == 200) {
               this.$router.push("/role");
             } else {
-              alert(res.data.msg);
+              alert(res.msg);
             }
           });
         }

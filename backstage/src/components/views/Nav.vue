@@ -38,12 +38,16 @@ export default {
   },
   methods: {
     getNavMenu() {
-      this.$axios({
-        url: "/api/menulist",
-        params: { istree: 1 }
-      }).then(res => {
-        this.menus = res.data.list;
-      });
+      // this.$axios({
+      //   url: "/api/menulist",
+      //   params: { istree: 1 }
+      // }).then(res => {
+      //   this.menus = res.data.list;
+      // });
+      if(localStorage.getItem('htuser')){
+        let info = JSON.parse(localStorage.getItem('htuser'));
+        this.menus=info.menus
+      }
     }
   },
   mounted() {

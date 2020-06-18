@@ -71,22 +71,16 @@ export default {
   mounted() {
     if (this.$route.params.menuid) {
       this.tip = "修改";
-      this.$axios({
-        url: "/api/menuinfo",
-        params: { id: this.$route.params.menuid }
-      }).then(res => {
-        console.log(res);
-
-        this.info = res.data.list;
-        this.info.status = this.info.status == 1 ? true : false;
-        this.info.type = this.info.type.toString();
-      });
+      this.$http
+        .get("/api/menuinfo", { id: this.$route.params.menuid })
+        .then(res => {
+          this.info = res.list;
+          this.info.status = this.info.status == 1 ? true : false;
+          this.info.type = this.info.type.toString();
+        });
     }
-    this.$axios({
-      url: "/api/menulist"
-    }).then(res => {
-      this.menus = res.data.list;
-      console.log(this.menus);
+    this.$http.get("/api/menulist").then(res => {
+      this.menus = res.list;
     });
   },
   methods: {
@@ -99,9 +93,8 @@ export default {
           if (this.$route.params.menuid) {
             (url = "/api/menuedit"), (data.id = this.$route.params.menuid);
           }
-          axios.post(url, data).then(res => {
-            console.log(data);
-            if (res.data.code == 200) {
+          this.$http.post(url, data).then(res => {
+            if (res.code == 200) {
               this.$router.push("/menu");
             } else {
               alert(1);

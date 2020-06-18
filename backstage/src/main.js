@@ -8,7 +8,10 @@ import "element-ui/lib/theme-chalk/index.css"
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 import axios from 'axios'
-Vue.prototype.$axios=axios;
+Vue.prototype.$axios = axios;
+
+import http from './common/js/http'
+Vue.prototype.$http = http;
 
 /* eslint-disable no-new */
 new Vue({
@@ -16,5 +19,5 @@ new Vue({
     router,
     // components: { App },
     // template: '<App/>'
-    render:h=>h(App)
+    render: h => h(App)
 })

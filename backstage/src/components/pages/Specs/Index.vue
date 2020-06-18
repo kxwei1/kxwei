@@ -4,17 +4,22 @@
       <el-breadcrumb-item :to="{path:'/home'}">首页</el-breadcrumb-item>
       <el-breadcrumb-item>管理员管理</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-button @click="$router.push('/user/add')" type="primary">添加</el-button>
+    <el-button @click="$router.push('/specs/add')" type="primary">添加</el-button>
     <el-table
-      :data="users"
+      :data="specs"
       style="width:100%"
       border
       stripe
       row-key="id"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="username" label="用户名"></el-table-column>
-      <el-table-column prop="rolename" label="所选角色"></el-table-column>
+      <el-table-column prop="specsname" label="属性名称"></el-table-column>
+      <el-table-column prop="attrs" label="属性值">
+        <template slot-scope="item">
+           <el-tag>{{item.row.attrs.toString()}}</el-tag>
+        </template>
+        
+      </el-table-column>
       <el-table-column label="状态">
         <template slot-scope="item">
           <el-tag v-if="item.row.status==1">启用</el-tag>
@@ -46,8 +51,7 @@ export default {
         children: "children",
         label: "title"
       },
-      users: [],
-      menus: [],
+      specs: [],
       total: 0,
       pagesize: 2,
       nowpage: 1
@@ -59,15 +63,18 @@ export default {
   },
   methods: {
     getCount() {
-      this.$http.get("/api/usercount").then(res => {
+      this.$http.get("/api/specscount").then(res => {
         this.total = res.list[0].total;
       });
     },
     getPage() {
       this.$http
-        .get("/api/userlist", { size: this.pagesize, page: this.nowpage })
+        .get("/api/specslist", {size: this.pagesize, page: this.nowpage })
         .then(res => {
-          this.users = res.list;
+          this.specs = res.list;
+          console.log(res);
+          console.log(this.specs);
+          
         });
     },
     pageChange(n) {
@@ -77,7 +84,7 @@ export default {
     edit(uid) {
       console.log();
 
-      this.$router.push("/user/" + uid);
+      this.$router.push("/specs/" + uid);
     },
     del(id) {
       this.$confirm("此操作将永久删除该菜单, 是否继续?", "提示", {
@@ -86,7 +93,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$axios({
-          url: "/api/userdelete",
+          url: "/api/specsdelete",
           method: "post",
           data: { id }
         }).then(res => {

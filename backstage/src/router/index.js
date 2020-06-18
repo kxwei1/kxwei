@@ -6,14 +6,13 @@ const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
     return originalPush.call(this, location).catch(err => err)
 }
-export default new Router({
+let router= new Router({
     routes: [{
         path: '/',
         component: () => import('@/components/pages/Layout'),
         children: [{
                 path: 'home',
                 component: () => import('../components/pages/Index'),
-                //设置一个自定义属性，用来告知页面加载时，左侧哪个菜单选中
                 meta: {
                     select: '/home'
                 }
@@ -81,13 +80,84 @@ export default new Router({
                     select: '/user'
                 }
             },
+            {
+                path: 'category',
+                component: () => import('../components/pages/Category/Index'),
+                meta: {
+                    select: '/category'
+                }
+            },
+            {
+                path: 'category/add',
+                component: () => import('../components/pages/Category/Info'),
+                meta: {
+                    select: '/category'
+                }
+            },
+            {
+                path: 'cate/:cateid',
+                component: () => import('../components/pages/Category/Info'),
+                meta: {
+                    select: '/category'
+                }
+            },
+            {
+                path: 'specs',
+                component: () => import('../components/pages/Specs/Index'),
+                meta: {
+                    select: '/specs'
+                }
+            },
+            {
+                path: 'specs/add',
+                component: () => import('../components/pages/Specs/Info'),
+                meta: {
+                    select: '/specs'
+                }
+            },
+            {
+                path: 'specs/:specsid',
+                component: () => import('../components/pages/Specs/Info'),
+                meta: {
+                    select: '/specs'
+                }
+            },
         ]
-
     },
     {
         path: '/login',
-        component: () => import('@/components/pages/Login'),
-    }
+        component: () => import('../components/pages/Login'),
+    },
 
 ]
 })
+
+router.beforeEach((to, from, next) =>{
+    let userinfo = localStorage.getItem("htuser")
+      ? JSON.parse(localStorage.getItem("htuser"))
+      : null;
+    if (userinfo) { 
+      userinfo.menus_url.push("/");
+      userinfo.menus_url.push("/home");
+      let menuarr = userinfo.menus_url;
+      let nowpatharr=to.path.split('/');
+      let nowpath= '/'+nowpatharr[1];
+      let res = menuarr.find(d => {
+        return d == nowpath;
+      });
+      if (res) {
+        next();
+      } else {
+        next("/");
+      }
+    } else {
+        if(to.path=='/login'){
+            next()
+        }
+        else{
+
+            next('/login');
+        }
+    }
+  })
+export default router;

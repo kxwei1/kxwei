@@ -62,18 +62,14 @@ export default {
   mounted() {
     if (this.$route.params.uid) {
       this.tip = "修改";
-      this.$axios({
-        url: "/api/userinfo",
-        params: { uid: this.$route.params.uid }
-      }).then(res => {
-        this.info = res.data.list;
+      this.$http.get( "/api/userinfo",{ uid: this.$route.params.uid }
+      ).then(res => {
+        this.info = res.list;
         this.info.status = this.info.status == 1 ? true : false;
       })
     }
-    this.$axios({
-          url: "/api/rolelist"
-        }).then(res => {
-          this.roles = res.data.list;
+    this.$http.get( "/api/rolelist").then(res => {
+          this.roles = res.list;
         })
   },
   methods: {
@@ -86,8 +82,8 @@ export default {
           if (this.$route.params.uid) {
             (url = "/api/useredit"), (data.id = this.$route.params.uid);
           }
-          axios.post(url, data).then(res => {
-            if (res.data.code == 200) {
+          this.$http.post(url, data).then(res => {
+            if (res.code == 200) {
               this.$router.push("/user");
             } else {
               alert(1);

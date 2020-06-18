@@ -31,11 +31,14 @@ export default {
     };
   },
   mounted() {
-    this.$axios({
-      url: "/api/rolelist",
-    }).then(res => {
-      console.log(res);
-      this.roles = res.data.list;
+    // this.$axios({
+    //   url: "/api/rolelist",
+    // }).then(res => {
+    //   console.log(res);
+    //   this.roles = res.data.list;
+    // });
+    this.$http.get("/api/rolelist",'').then(res => {
+      this.roles = res.list;
     });
   },
   methods: {
