@@ -39,8 +39,19 @@ let menuadd = '/api/menuadd',
     bannerlist = '/api/bannerlist',
     bannerinfo = '/api/bannerinfo',
     banneredit = '/api/banneredit',
+    seckadd = '/api/seckadd',
+    secklist = '/api/secklist',
+    seckinfo = '/api/seckinfo',
+    seckedit = '/api/seckedit',
+    seckdelete = '/api/seckdelete',
     bannerdelete = '/api/menulibannerdeletest';
+
 export default {
+    seckadd,
+    secklist,
+    seckinfo,
+    seckedit,
+    seckdelete,
     menuadd,
     menulist,
     menuinfo,
@@ -83,4 +94,5 @@ export default {
     bannerinfo,
     banneredit,
     bannerdelete,
+
 }

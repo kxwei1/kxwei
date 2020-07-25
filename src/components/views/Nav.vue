@@ -34,12 +34,15 @@ export default {
   data() {
     return {
       menus: [],
-      defaultActive: ""
+      defaultActive: '',
     };
   },
   computed:{
     ...mapGetters(['userInfo'])
   },
+  mounted(){
+    this.defaultActive=this.$route.path
+  }
 };
 </script>
 <style scoped>

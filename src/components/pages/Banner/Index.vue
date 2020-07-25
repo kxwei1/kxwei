@@ -15,7 +15,7 @@
     >
       >
       <el-table-column prop="id" label="分类编号"></el-table-column>
-      <el-table-column prop="catename" label="分类名称"></el-table-column>
+      <el-table-column prop="title" label="分类名称"></el-table-column>
       <el-table-column prop="img" label="商品图片">
         <template slot-scope="item">
           <img class="img" :src="item.row.img" alt />
@@ -51,6 +51,7 @@ export default {
   mounted() {
     let userinfo = JSON.parse(localStorage.getItem("htuser"));
     this.$http.get("/api/bannerlist", { istree: 1 }).then(res => {
+      console.log(res);
       this.cates = res.list;
     });
   },

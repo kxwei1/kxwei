@@ -164,6 +164,20 @@ let router = new Router({
                 select: '/banner'
             }
         },
+        {
+            path: 'member',
+            component: () => import('../components/pages/Member/Index'),
+            meta: {
+                select: '/member'
+            }
+        },
+        {
+            path: 'seck',
+            component: () => import('../components/pages/Seck/Index'),
+            meta: {
+                select: '/seck'
+            }
+        },
         ]
     },
     {

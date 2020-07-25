@@ -62,10 +62,10 @@ export default {
     };
   },
   mounted() { 
-    if (this.$route.params.cateid) {
+    if (this.$route.params.bannerid) {
       this.tip = "修改";
       this.$http
-        .get("/api/bannerinfo", { id: this.$route.params.cateid })
+        .get("/api/bannerinfo", { id: this.$route.params.bannerid })
         .then(res => {
           this.img = res.list.img;
           this.fileList =this.img? [{ url: this.img }]:[];

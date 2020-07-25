@@ -49,7 +49,7 @@ export default {
       users: [],
       menus: [],
       total: 0,
-      pagesize: 2,
+      pagesize: 10,
       nowpage: 1
     };
   },
