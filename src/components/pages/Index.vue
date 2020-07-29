@@ -11,7 +11,6 @@ export default {
   data() {
     return {
       charts: "",
-      orderData: ["313", "340", "121", "154", "158", "478", "875"]
     };
   },
   methods: {
